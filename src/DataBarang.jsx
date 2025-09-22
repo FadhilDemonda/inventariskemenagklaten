@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ChevronDown, Search, Users } from 'lucide-react';
-import InputBarang from './InputBarang';
+import InputBarang from './InputBarangPage';
+import { useNavigate } from 'react-router-dom';
 
 function DataBarang() {
+  const navigate = useNavigate(); 
   const dropdownRef = useRef(null);
   const [activeMenu, setActiveMenu] = useState('data');
   const [searchTerm, setSearchTerm] = useState('');
@@ -161,11 +163,7 @@ function DataBarang() {
                   Data Barang
                 </button>
                 <button
-                  onClick={() => setActiveMenu('input')}
-                  className={`${activeMenu === 'input' 
-                    ? 'border-blue-500 text-gray-900' 
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  } whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm transition-colors duration-200`}
+                  onClick={() => navigate('/inputbarang')}
                 >
                   Input Barang
                 </button>
