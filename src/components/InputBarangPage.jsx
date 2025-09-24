@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Plus, ArrowLeft } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Plus} from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { apiService } from '../services/apiServices';
 
@@ -20,26 +20,25 @@ function InputBarangPage() {
     usedQty: ''
   });
 
-  // Load statuses on component mount
+  // Load statuses from API
+  const loadStatuses = useCallback(async () => {
+  try {
+    const response = await apiService.getStatuses();
+    if (response.success) {
+      setStatuses(response.data);
+      if (response.data.length > 0 && !newItem.status) {
+        setNewItem(prev => ({ ...prev, status: response.data[0].name }));
+      }
+    }
+  } catch (error) {
+    console.error('Error loading statuses:', error);
+  }
+ }, [newItem.status]);
+
+   // Load statuses on component mount
   useEffect(() => {
     loadStatuses();
-  }, []);
-
-  // Load statuses from API
-  const loadStatuses = async () => {
-    try {
-      const response = await apiService.getStatuses();
-      if (response.success) {
-        setStatuses(response.data);
-        // Set default status if available
-        if (response.data.length > 0 && !newItem.status) {
-          setNewItem(prev => ({ ...prev, status: response.data[0].name }));
-        }
-      }
-    } catch (error) {
-      console.error('Error loading statuses:', error);
-    }
-  };
+  }, [loadStatuses]);
 
   // Handle add new item
   const handleAddItem = async () => {
