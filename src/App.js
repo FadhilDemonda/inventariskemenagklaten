@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "./DataBarang";
-import InputBarangPage from "./InputBarangPage"; // Import yang baru
+import Home from "./components/DataBarang";
+import InputBarangPage from "./components/InputBarangPage"; // Import yang baru
 import Login from "./loginapp";
 
 function App() {
