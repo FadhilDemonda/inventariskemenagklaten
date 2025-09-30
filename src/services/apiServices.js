@@ -6,7 +6,7 @@ export const apiService = {
   // Items endpoints
   async getItems() {
     try {
-      const response = await fetch(`${API_BASE_URL}/read.php`);
+      const response = await fetch `http://backendinventarispakeko.infinityfree.me/api/read.php`;
       const data = await response.json();
       return data;
     } catch (error) {
