@@ -1,5 +1,5 @@
 // API base URL for XAMPP
-const API_BASE_URL = 'http://localhost/inventaris_kantor/api';
+const API_BASE_URL = 'http://backendinventarispakeko.infinityfree.me/api';
 
 // API service functions
 export const apiService = {
