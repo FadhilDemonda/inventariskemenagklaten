@@ -1,5 +1,3 @@
-const fetch = require('node-fetch');
-
 exports.handler = async (event, context) => {
   // Handle CORS preflight
   if (event.httpMethod === 'OPTIONS') {
@@ -14,7 +12,6 @@ exports.handler = async (event, context) => {
     };
   }
 
-  // Ambil endpoint dari query parameter
   const endpoint = event.queryStringParameters?.endpoint || '';
   
   if (!endpoint) {
@@ -33,27 +30,53 @@ exports.handler = async (event, context) => {
 
   const backendUrl = `https://backendinventarispakeko.infinityfree.me/api/${endpoint}`;
   
-  // Ambil query parameters lainnya (untuk barang_id, dll)
+  // Ambil query parameters lainnya
   const queryParams = new URLSearchParams(event.queryStringParameters);
-  queryParams.delete('endpoint'); // Hapus endpoint dari query params
+  queryParams.delete('endpoint');
   const queryString = queryParams.toString();
   const fullUrl = queryString ? `${backendUrl}?${queryString}` : backendUrl;
   
-  console.log('Fetching:', fullUrl); // Debug log
+  console.log('=== DEBUG INFO ===');
+  console.log('Endpoint:', endpoint);
+  console.log('Full URL:', fullUrl);
+  console.log('Method:', event.httpMethod);
   
   try {
     const response = await fetch(fullUrl, {
       method: event.httpMethod,
       headers: {
         'Content-Type': 'application/json',
+        'User-Agent': 'Netlify-Function'
       },
       body: event.httpMethod !== 'GET' && event.httpMethod !== 'HEAD' ? event.body : undefined
     });
     
+    const contentType = response.headers.get('content-type');
     const data = await response.text();
     
-    console.log('Response status:', response.status); // Debug log
-    console.log('Response data:', data.substring(0, 200)); // Debug log
+    console.log('Response Status:', response.status);
+    console.log('Content-Type:', contentType);
+    console.log('Response preview:', data.substring(0, 500));
+    
+    // Cek apakah response adalah HTML (error page)
+    if (data.trim().startsWith('<') && data.includes('<!DOCTYPE') || data.includes('<html')) {
+      return {
+        statusCode: 502,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ 
+          success: false,
+          message: 'Backend returned HTML error page instead of JSON',
+          debug: {
+            url: fullUrl,
+            status: response.status,
+            preview: data.substring(0, 200)
+          }
+        })
+      };
+    }
     
     return {
       statusCode: response.status,
@@ -66,7 +89,7 @@ exports.handler = async (event, context) => {
       body: data
     };
   } catch (error) {
-    console.error('Error:', error); // Debug log
+    console.error('Fetch error:', error);
     
     return {
       statusCode: 500,
@@ -77,7 +100,7 @@ exports.handler = async (event, context) => {
       body: JSON.stringify({ 
         success: false,
         message: error.message,
-        stack: error.stack
+        url: fullUrl
       })
     };
   }
