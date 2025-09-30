@@ -1,12 +1,12 @@
-// API base URL menggunakan Netlify Functions sebagai proxy
-const API_BASE_URL = '/.netlify/functions/api-proxy';
+// API base URL for XAMPP
+const API_BASE_URL = 'http://localhost/inventaris_kantor/api';
 
 // API service functions
 export const apiService = {
   // Items endpoints
   async getItems() {
     try {
-      const response = await fetch(`${API_BASE_URL}?endpoint=read.php`);
+      const response = await fetch(`${API_BASE_URL}/read.php`);
       const data = await response.json();
       return data;
     } catch (error) {
@@ -17,7 +17,7 @@ export const apiService = {
 
   async createItem(itemData) {
     try {
-      const response = await fetch(`${API_BASE_URL}?endpoint=create.php`, {
+      const response = await fetch(`${API_BASE_URL}/create.php`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -34,7 +34,7 @@ export const apiService = {
 
   async updateItem(itemData) {
     try {
-      const response = await fetch(`${API_BASE_URL}?endpoint=update.php`, {
+      const response = await fetch(`${API_BASE_URL}/update.php`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -52,7 +52,7 @@ export const apiService = {
   // Borrowing endpoints
   async borrowItem(borrowData) {
     try {
-      const response = await fetch(`${API_BASE_URL}?endpoint=borrow.php`, {
+      const response = await fetch(`${API_BASE_URL}/borrow.php`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -69,7 +69,7 @@ export const apiService = {
 
   async getBorrowers(barangId) {
     try {
-      const response = await fetch(`${API_BASE_URL}?endpoint=borrowers.php&barang_id=${barangId}`);
+      const response = await fetch(`${API_BASE_URL}/borrowers.php?barang_id=${barangId}`);
       const data = await response.json();
       return data;
     } catch (error) {
@@ -81,7 +81,7 @@ export const apiService = {
   // Status endpoints
   async getStatuses() {
     try {
-      const response = await fetch(`${API_BASE_URL}?endpoint=status.php`);
+      const response = await fetch(`${API_BASE_URL}/status.php`);
       const data = await response.json();
       return data;
     } catch (error) {
@@ -92,7 +92,7 @@ export const apiService = {
 
   async createStatus(statusData) {
     try {
-      const response = await fetch(`${API_BASE_URL}?endpoint=status.php`, {
+      const response = await fetch(`${API_BASE_URL}/status.php`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -109,7 +109,7 @@ export const apiService = {
 
   async deleteStatus(statusId) {
     try {
-      const response = await fetch(`${API_BASE_URL}?endpoint=status.php`, {
+      const response = await fetch(`${API_BASE_URL}/status.php`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -127,7 +127,7 @@ export const apiService = {
   // Delete item
   async deleteItem(itemId) {
     try {
-      const response = await fetch(`${API_BASE_URL}?endpoint=delete.php`, {
+      const response = await fetch(`${API_BASE_URL}/delete.php`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -145,7 +145,7 @@ export const apiService = {
   // Return borrowed item
   async returnItem(peminjamanId) {
     try {
-      const response = await fetch(`${API_BASE_URL}?endpoint=return.php`, {
+      const response = await fetch(`${API_BASE_URL}/return.php`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
