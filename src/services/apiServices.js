@@ -1,12 +1,12 @@
 // API base URL for XAMPP
-const API_BASE_URL = 'http://backendinventarispakeko.infinityfree.me/api';
+const API_BASE_URL = 'https://backendinventarispakeko.infinityfree.me/api';
 
 // API service functions
 export const apiService = {
   // Items endpoints
   async getItems() {
     try {
-      const response = await fetch `http://backendinventarispakeko.infinityfree.me/api/read.php`;
+      const response = await fetch(`${API_BASE_URL}/read.php`);
       const data = await response.json();
       return data;
     } catch (error) {
