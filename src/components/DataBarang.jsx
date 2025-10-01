@@ -112,16 +112,18 @@ function DataBarang() {
   };
 
   // Load borrowers for specific item
-  const loadBorrowers = async (barangId) => {
-    try {
-      const response = await apiService.getBorrowers(barangId);
-      if (response.success) {
-        setBorrowers(response.data);
-      }
-    } catch (err) {
-      console.error('Error loading borrowers:', err);
+const loadBorrowers = async (barangId) => {
+  try {
+    const response = await apiService.getBorrowers(barangId);
+    console.log("Response Borrowers:", response); // cek isi di sini
+    if (response.success) {
+      setBorrowers(response.data);
     }
-  };
+  } catch (err) {
+    console.error("Error loading borrowers:", err);
+  }
+};
+
 
   // Effect untuk menutup dropdown saat klik di luar
   useEffect(() => {
@@ -235,7 +237,9 @@ function DataBarang() {
         barang_id: selectedItem.id,
         nama_peminjam: pinjamData.namaPeminjam,
         surat_pinjam: pinjamData.suratPinjam,
-        jumlah_pinjam: pinjamData.jumlahPinjam
+        jumlah_pinjam: pinjamData.jumlahPinjam,
+        tanggal_pinjam: new Date().toISOString() // atau Date.now()
+
       };
 
       const response = await apiService.borrowItem(borrowRequest);
@@ -710,9 +714,12 @@ function DataBarang() {
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             {peminjam.surat_pinjam}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {new Date(peminjam.tanggal_pinjam).toLocaleDateString('id-ID')}
-                          </td>
+<td>
+  {peminjam.tanggal_pinjam
+    ? new Date(peminjam.tanggal_pinjam).toLocaleDateString('id-ID')
+    : '-'}
+</td>
+
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             {peminjam.jumlah_pinjam}
                           </td>
