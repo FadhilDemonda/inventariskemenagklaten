@@ -1,15 +1,21 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Home from "./components/DataBarang";
-import InputBarangPage from "./components/InputBarangPage"; // Import yang baru
+import InputBarangPage from "./components/InputBarangPage";
 import Login from "./loginapp";
+
+function PrivateRoute({ children }) {
+  const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+  return isLoggedIn ? children : <Navigate to="/login" replace />;
+}
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<Login />} />
-        <Route path="/" element={<Home />} />
-        <Route path="/inputbarang" element={<InputBarangPage />} />
+        {/* hanya bisa diakses kalau sudah login */}
+        <Route path="/" element={<PrivateRoute><Home /></PrivateRoute>} />
+        <Route path="/inputbarang" element={<PrivateRoute><InputBarangPage /></PrivateRoute>} />
       </Routes>
     </BrowserRouter>
   );

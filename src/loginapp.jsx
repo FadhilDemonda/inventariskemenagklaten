@@ -1,7 +1,10 @@
+// src/loginapp.jsx
 import React, { useState } from 'react';
 import { Eye, EyeOff, Lock, User } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 function Login() {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [loginData, setLoginData] = useState({
     username: '',
@@ -12,12 +15,24 @@ function Login() {
   const handleLogin = (e) => {
     e.preventDefault();
     setIsLoading(true);
-    
-    // Simulasi loading
+
+    // Simulasi proses (tetap pakai delay agar UX konsisten)
     setTimeout(() => {
       setIsLoading(false);
-      alert(`Login berhasil! Username: ${loginData.username} (Frontend Demo)`);
-    }, 2000);
+
+      // Cek kredensial: hanya terima admin/admin
+      const { username, password } = loginData;
+      if (username === 'admin' && password === 'admin') {
+        // Tandai user sudah login (simple session)
+        localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem('username', 'admin');
+
+        // Redirect ke halaman utama
+        navigate('/');
+      } else {
+        alert('Username atau password salah. Gunakan username: admin dan password: admin');
+      }
+    }, 900); // delay singkat untuk feel loading
   };
 
   return (
@@ -108,9 +123,7 @@ function Login() {
               </div>
 
               <div className="text-sm">
-                {/* <a href="#" className="font-medium text-blue-600 hover:text-blue-500">
-                  Lupa password?
-                </a> */}
+                {/* reserved for forgot password link */}
               </div>
             </div>
 
@@ -145,12 +158,8 @@ function Login() {
                 <span className="px-2 bg-white text-gray-500">Demo Account</span>
               </div>
             </div>
-
-            
           </div>
         </div>
-
-        
       </div>
     </div>
   );
