@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { apiService } from '../services/apiServices';
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import 'jspdf-autotable';
 
 
 function DataBarang() {
@@ -22,45 +23,129 @@ function DataBarang() {
   const [error, setError] = useState('');
 
   //Backup Data
-  const handleBackupPDF = () => {
-    const doc = new jsPDF();
+  // Ganti fungsi handleBackupPDF dengan ini:
+// Ganti fungsi handleBackupPDF dengan ini:
+const handleBackupPDF = async () => {
+  const doc = new jsPDF();
 
-    // Judul
-    doc.setFontSize(16);
-    doc.text("Laporan Data Barang Inventaris", 14, 20);
+  // === HALAMAN 1: TABEL BARANG ===
+  // Judul
+  doc.setFontSize(16);
+  doc.text("Laporan Data Barang Inventaris", 14, 20);
 
-    // Tanggal backup
+  // Tanggal backup
+  doc.setFontSize(10);
+  doc.text(`Tanggal: ${new Date().toLocaleDateString("id-ID")}`, 14, 28);
+
+  // Tabel Barang
+  const tableColumn = [
+    "Nama Barang",
+    "Status",
+    "Total",
+    "Tersedia",
+    "Digunakan",
+    "Update Terakhir",
+  ];
+
+  const tableRows = filteredInventory.map((item) => [
+    item.name,
+    item.status,
+    item.totalQty,
+    item.availableQty,
+    item.usedQty,
+    new Date(item.lastUpdate).toLocaleDateString("id-ID"),
+  ]);
+
+  autoTable(doc, {
+    head: [tableColumn],
+    body: tableRows,
+    startY: 35,
+    styles: {
+      fontSize: 8,
+      cellPadding: 2,
+    },
+  });
+
+  // === HALAMAN 2: TABEL PEMINJAM ===
+  // Tambah halaman baru
+  doc.addPage();
+  
+  // Judul halaman peminjam
+  doc.setFontSize(16);
+  doc.text("Daftar Peminjam Barang", 14, 20);
+  
+  doc.setFontSize(10);
+  doc.text(`Tanggal: ${new Date().toLocaleDateString("id-ID")}`, 14, 28);
+
+  // Load semua data peminjam
+  const allBorrowers = [];
+  for (const item of filteredInventory) {
+    const borrowersResponse = await apiService.getBorrowers(item.id);
+    if (borrowersResponse.success && borrowersResponse.data.length > 0) {
+      borrowersResponse.data.forEach(borrower => {
+        allBorrowers.push({
+          namaPeminjam: borrower.nama_peminjam,
+          namaBarang: item.name,
+          tanggal: borrower.tanggal_pinjam 
+            ? new Date(borrower.tanggal_pinjam).toLocaleDateString("id-ID")
+            : '-',
+          jumlah: borrower.jumlah_pinjam,
+          suratPinjam: borrower.surat_pinjam
+        });
+      });
+    }
+  }
+
+  // Tabel Peminjam
+  const borrowerColumns = [
+    "Nama Peminjam",
+    "Barang",
+    "Tanggal Pinjam",
+    "Jumlah",
+    "No. Surat"
+  ];
+
+  const borrowerRows = allBorrowers.map((borrower) => [
+    borrower.namaPeminjam,
+    borrower.namaBarang,
+    borrower.tanggal,
+    borrower.jumlah,
+    borrower.suratPinjam
+  ]);
+
+  autoTable(doc, {
+    head: [borrowerColumns],
+    body: borrowerRows.length > 0 ? borrowerRows : [['Tidak ada peminjam saat ini', '', '', '', '']],
+    startY: 35,
+    styles: {
+      fontSize: 9,
+      cellPadding: 3,
+    },
+    headStyles: {
+      fillColor: [34, 197, 94], // Warna hijau
+      textColor: 255,
+      fontStyle: 'bold',
+    },
+    columnStyles: {
+      0: { cellWidth: 40 }, // Nama Peminjam
+      1: { cellWidth: 45 }, // Barang
+      2: { cellWidth: 30, halign: 'center' }, // Tanggal
+      3: { cellWidth: 20, halign: 'center' }, // Jumlah
+      4: { cellWidth: 35 }, // No. Surat
+    },
+  });
+
+  // Total peminjam
+  if (allBorrowers.length > 0) {
+    const finalY = doc.lastAutoTable.finalY + 10;
     doc.setFontSize(10);
-    doc.text(`Tanggal: ${new Date().toLocaleDateString("id-ID")}`, 14, 28);
+    doc.setFont(undefined, 'bold');
+    doc.text(`Total Peminjam: ${allBorrowers.length}`, 14, finalY);
+  }
 
-    // Buat tabel dari data inventory
-    const tableColumn = [
-      "Nama Barang",
-      "Status",
-      "Total",
-      "Tersedia",
-      "Digunakan",
-      "Update Terakhir",
-    ];
-
-    const tableRows = filteredInventory.map((item) => [
-      item.name,
-      item.status,
-      item.totalQty,
-      item.availableQty,
-      item.usedQty,
-      new Date(item.lastUpdate).toLocaleDateString("id-ID"),
-    ]);
-
-    autoTable(doc, {
-      head: [tableColumn],
-      body: tableRows,
-      startY: 35,
-    });
-
-    // Simpan PDF
-    doc.save(`backup_inventaris_${new Date().toISOString().slice(0, 10)}.pdf`);
-  };
+  // Simpan PDF
+  doc.save(`backup_inventaris_${new Date().toISOString().slice(0, 10)}.pdf`);
+};
 
 
   
@@ -337,6 +422,12 @@ const loadBorrowers = async (barangId) => {
                   className="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm transition-colors duration-200"
                 >
                   Input Barang
+                </button>
+                <button
+                  onClick={() => navigate('/kendaraan')}
+                  className="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm transition-colors duration-200"
+                >
+                  Kendaraan
                 </button>
               </div>
             </div>

@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Home from "./components/DataBarang";
 import InputBarangPage from "./components/InputBarangPage";
 import Login from "./loginapp";
+import DataKendaraan from "./components/DataKendaraan";
 
 function PrivateRoute({ children }) {
   const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
@@ -16,6 +17,7 @@ function App() {
         {/* hanya bisa diakses kalau sudah login */}
         <Route path="/" element={<PrivateRoute><Home /></PrivateRoute>} />
         <Route path="/inputbarang" element={<PrivateRoute><InputBarangPage /></PrivateRoute>} />
+        <Route path="/kendaraan" element={<PrivateRoute><DataKendaraan /></PrivateRoute>} />
       </Routes>
     </BrowserRouter>
   );
