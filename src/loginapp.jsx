@@ -30,7 +30,7 @@ function Login() {
         // Redirect ke halaman utama
         navigate('/');
       } else {
-        alert('Username atau password salah. Gunakan username: admin dan password: admin');
+        alert('Username atau password salah');
       }
     }, 900); // delay singkat untuk feel loading
   };
