@@ -212,7 +212,7 @@ async getBorrowers(barangId) {
       const response = await fetch(`${API_BASE_URL}/statuses/${statusId}.json`, {
         method: 'DELETE'
       });
-      const data = await response.json();
+      // const data = await response.json();
       return { success: true, message: "Status berhasil dihapus" };
     } catch (error) {
       console.error('Error deleting status:', error);
