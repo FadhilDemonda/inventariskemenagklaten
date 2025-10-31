@@ -21,6 +21,8 @@ function DataBarang() {
   const [openDropdown, setOpenDropdown] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [openMenu, setOpenMenu] = React.useState(false);
+
 
   //Backup Data
   // Ganti fungsi handleBackupPDF dengan ini:
@@ -46,6 +48,8 @@ const handleBackupPDF = async () => {
     "Digunakan",
     "Update Terakhir",
   ];
+
+  
 
   const tableRows = filteredInventory.map((item) => [
     item.name,
@@ -397,43 +401,93 @@ const loadBorrowers = async (barangId) => {
     );
   }
 
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Navbar */}
       <nav className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex">
-              <div className="flex-shrink-0 flex items-center">
-                <h1 className="text-xl font-bold text-gray-900">Inventaris Kantor</h1>
-              </div>
-              <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-                <button
-                  onClick={() => setActiveMenu('data')}
-                  className={`${activeMenu === 'data' 
-                    ? 'border-green-500 text-gray-900' 
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  } whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm transition-colors duration-200`}
-                >
-                  Data Barang
-                </button>
-                <button
-                  onClick={() => navigate('/inputbarang')}
-                  className="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm transition-colors duration-200"
-                >
-                  Input Barang
-                </button>
-                <button
-                  onClick={() => navigate('/kendaraan')}
-                  className="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm transition-colors duration-200"
-                >
-                  Kendaraan
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </nav>
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="flex justify-between items-center h-16">
+      {/* Kiri: Judul */}
+      <div className="flex-shrink-0 flex items-center">
+        <h1 className="text-xl font-bold text-gray-900">Inventaris Kantor</h1>
+      </div>
+
+      {/* Tombol Menu Desktop */}
+      <div className="hidden sm:flex sm:space-x-8">
+        <button
+          onClick={() => setActiveMenu('data')}
+          className={`${activeMenu === 'data' 
+            ? 'border-green-500 text-gray-900' 
+            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+          } whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm transition-colors duration-200`}
+        >
+          Data Barang
+        </button>
+        <button
+          onClick={() => navigate('/inputbarang')}
+          className="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm transition-colors duration-200"
+        >
+          Input Barang
+        </button>
+        <button
+          onClick={() => navigate('/kendaraan')}
+          className="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm transition-colors duration-200"
+        >
+          Kendaraan
+        </button>
+      </div>
+
+      {/* Tombol Hamburger Mobile */}
+      <div className="sm:hidden flex items-center">
+        <button
+          onClick={() => setOpenMenu(!openMenu)}
+          className="text-gray-700 text-2xl"
+        >
+          {openMenu ? '✖' : '☰'}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  {/* Dropdown Mobile */}
+  {openMenu && (
+    <div className="sm:hidden px-4 pb-3 space-y-2 border-t">
+      <button
+        onClick={() => {
+          setActiveMenu('data');
+          setOpenMenu(false);
+        }}
+        className={`block w-full text-left ${
+          activeMenu === 'data'
+            ? 'text-green-600 font-semibold'
+            : 'text-gray-700 hover:text-green-600'
+        } py-2`}
+      >
+        Data Barang
+      </button>
+      <button
+        onClick={() => {
+          navigate('/inputbarang');
+          setOpenMenu(false);
+        }}
+        className="block w-full text-left text-gray-700 hover:text-green-600 py-2"
+      >
+        Input Barang
+      </button>
+      <button
+        onClick={() => {
+          navigate('/kendaraan');
+          setOpenMenu(false);
+        }}
+        className="block w-full text-left text-gray-700 hover:text-green-600 py-2"
+      >
+        Kendaraan
+      </button>
+    </div>
+  )}
+</nav>
+
 
       {/* Content */}
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
