@@ -111,75 +111,49 @@ function DataKendaraan() {
     doc.text(`Total Kendaraan: ${kendaraan.length} | Roda Dua: ${rodaDua} | Roda Empat: ${rodaEmpat} | Pajak Kadaluarsa: ${pajakExpired}`, 14, 30);
     
     // Table data
-    const tableData = filteredKendaraan.map((item, index) => {
-      const pajakStatus = getPajakStatus(item.tanggalPajak);
-      return [
-        index + 1,
-        item.namaKendaraan,
-        item.nomorPlat,
-        item.satker,
-        new Date(item.tanggalPajak).toLocaleDateString('id-ID'),
-        pajakStatus.text,
-        item.keterangan
-      ];
-    });
-    
-    // Generate table
-    autoTable(doc, {
-      startY: 35,
-      head: [['No', 'Nama Kendaraan', 'Nomor Plat', 'Satker', 'Tgl Pajak', 'Status Pajak', 'Jenis']],
-      body: tableData,
-      styles: {
-        fontSize: 8,
-        cellPadding: 2,
-      },
-      headStyles: {
-        fillColor: [22, 163, 74],
-        textColor: 255,
-        fontStyle: 'bold',
-        halign: 'center'
-      },
-      columnStyles: {
-        0: { cellWidth: 10, halign: 'center' },
-        1: { cellWidth: 35 },
-        2: { cellWidth: 25, halign: 'center', font: 'courier' },
-        3: { cellWidth: 35 },
-        4: { cellWidth: 25, halign: 'center' },
-        5: { cellWidth: 25, halign: 'center' },
-        6: { cellWidth: 20, halign: 'center' }
-      },
-      didParseCell: function(data) {
-        // Color code status pajak
-        if (data.column.index === 5 && data.section === 'body') {
-          const statusText = data.cell.text[0];
-          if (statusText === 'Kadaluarsa') {
-            data.cell.styles.textColor = [220, 38, 38];
-            data.cell.styles.fontStyle = 'bold';
-          } else if (statusText.includes('hari lagi')) {
-            data.cell.styles.textColor = [234, 179, 8];
-            data.cell.styles.fontStyle = 'bold';
-          } else {
-            data.cell.styles.textColor = [22, 163, 74];
-          }
-        }
-        // Color code keterangan
-        if (data.column.index === 6 && data.section === 'body') {
-          const jenis = data.cell.text[0];
-          if (jenis === 'Roda Dua') {
-            data.cell.styles.fillColor = [219, 234, 254];
-            data.cell.styles.textColor = [30, 64, 175];
-          } else {
-            data.cell.styles.fillColor = [243, 232, 255];
-            data.cell.styles.textColor = [107, 33, 168];
-          }
-          data.cell.styles.fontStyle = 'bold';
-        }
-      },
-      alternateRowStyles: {
-        fillColor: [249, 250, 251]
-      }
-    });
-    
+    // Table data
+const tableData = filteredKendaraan.map((item, index) => {
+  const pajakStatus = getPajakStatus(item.tanggalPajak);
+  const latestBorrower = borrowers[item.id]?.[0]; // ambil peminjam terbaru (jika ada)
+  return [
+    index + 1,
+    item.namaKendaraan,
+    item.nomorPlat,
+    item.satker,
+    new Date(item.tanggalPajak).toLocaleDateString('id-ID'),
+    pajakStatus.text,
+    item.keterangan,
+    latestBorrower ? latestBorrower.nama_peminjam : '-', // tambahkan nama peminjam
+    latestBorrower ? latestBorrower.keperluan : '-'      // tambahkan keperluan
+  ];
+});
+
+// Generate table
+autoTable(doc, {
+  startY: 35,
+  head: [['No', 'Nama Kendaraan', 'Nomor Plat', 'Satker', 'Tgl Pajak', 'Status Pajak', 'Jenis', 'Peminjam', 'Keperluan']],
+  body: tableData,
+  styles: { fontSize: 8, cellPadding: 2 },
+  headStyles: {
+    fillColor: [22, 163, 74],
+    textColor: 255,
+    fontStyle: 'bold',
+    halign: 'center'
+  },
+  columnStyles: {
+    0: { cellWidth: 10, halign: 'center' },
+    1: { cellWidth: 25 },
+    2: { cellWidth: 20, halign: 'center', font: 'courier' },
+    3: { cellWidth: 25 },
+    4: { cellWidth: 15, halign: 'center' },
+    5: { cellWidth: 20, halign: 'center' },
+    6: { cellWidth: 20, halign: 'center' },
+    7: { cellWidth: 20 },
+    8: { cellWidth: 20 }
+  },
+  alternateRowStyles: { fillColor: [249, 250, 251] }
+});
+
     // Footer
     const pageCount = doc.internal.getNumberOfPages();
     for (let i = 1; i <= pageCount; i++) {
